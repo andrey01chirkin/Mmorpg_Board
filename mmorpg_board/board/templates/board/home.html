@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<div class="text-center mt-5">
+    <h1 class="mb-4">Добро пожаловать на MMORPG Board!</h1>
+
+    {% if user.is_authenticated %}
+        <p class="lead">Вы вошли как <strong>{{ user.username }}</strong>.</p>
+    {% else %}
+        <p class="lead">
+            <a href="{% url 'register' %}" class="btn btn-outline-primary me-2">Зарегистрироваться</a>
+            <a href="{% url 'login' %}" class="btn btn-primary">Войти</a>
+        </p>
+    {% endif %}
+</div>
+{% endblock %}

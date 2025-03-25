@@ -5,6 +5,10 @@ from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from .forms import EmailCodeForm
 from django.contrib.auth import login
+from .forms import EmailLoginForm
+
+def home_view(request):
+    return render(request, 'board/home.html')
 
 def register_view(request):
     if request.method == 'POST':
@@ -43,11 +47,28 @@ def confirm_email_view(request):
                 user.is_active = True
                 user.save()
                 confirmation.delete()
-                login(request, user)
-                return redirect('/')
+                return redirect('registration_success')
             else:
                 form.add_error('code', 'Неверный код')
     else:
         form = EmailCodeForm()
+
     return render(request, 'board/confirm_email.html', {'form': form})
+
+
+
+def registration_success_view(request):
+    return render(request, 'board/registration_success.html')
+
+
+def login_view(request):
+    form = EmailLoginForm()
+    if request.method == 'POST':
+        form = EmailLoginForm(request.POST)
+        if form.is_valid():
+            user = form.cleaned_data['user']
+            login(request, user)
+            return redirect('/')
+    return render(request, 'board/login.html', {'form': form})
+
 

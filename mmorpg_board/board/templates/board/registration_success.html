@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Поздравляем!{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow p-5 text-center" style="max-width: 500px; width: 100%;">
+        <h1 class="mb-4 text-success">🎉 Регистрация подтверждена!</h1>
+        <p class="lead mb-4">Добро пожаловать на наш портал. Теперь вы можете войти в личный кабинет.</p>
+        <a href="{% url 'login' %}" class="btn btn-primary">Войти</a>
+    </div>
+</div>
+{% endblock %}
