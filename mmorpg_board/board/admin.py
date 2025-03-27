@@ -1,12 +1,7 @@
 from django.contrib import admin
-from .models import Post, Response
+from .models import Category, Post, Response
 
-@admin.register(Post)
-class PostAdmin(admin.ModelAdmin):
-    list_display = ('title', 'author', 'category', 'created_at')
-    search_fields = ('title', 'content')
+admin.site.register(Category)
+admin.site.register(Post)
+admin.site.register(Response)
 
-@admin.register(Response)
-class ResponseAdmin(admin.ModelAdmin):
-    list_display = ('post', 'author', 'is_accepted', 'created_at')
-    list_filter = ('is_accepted',)

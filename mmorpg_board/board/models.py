@@ -1,41 +1,36 @@
+import random
 from django.db import models
 from django.contrib.auth.models import User
 from ckeditor_uploader.fields import RichTextUploadingField
-import random
 
 
-CATEGORY_CHOICES = [
-    ('tank', 'Танки'),
-    ('healer', 'Хилы'),
-    ('dd', 'ДД'),
-    ('trader', 'Торговцы'),
-    ('guildmaster', 'Гилдмастеры'),
-    ('questgiver', 'Квестгиверы'),
-    ('blacksmith', 'Кузнецы'),
-    ('leatherworker', 'Кожевники'),
-    ('alchemist', 'Зельевары'),
-    ('spellmaster', 'Мастера заклинаний'),
-]
+class Category(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
+
 
 class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
+    category = models.ForeignKey(Category, on_delete=models.PROTECT)
+    title = models.CharField(max_length=200)
     content = RichTextUploadingField()
-    category = models.CharField(choices=CATEGORY_CHOICES, max_length=20)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
 
+
 class Response(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='responses')
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    text = models.TextField()
-    is_accepted = models.BooleanField(default=False)
+    message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    is_accepted = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'Отклик от {self.author} на {self.post}'
+        return f"Отклик от {self.author.username} на '{self.post.title}'"
 
 
 class EmailConfirmation(models.Model):
