@@ -8,6 +8,7 @@ from django.contrib.auth import login
 from .forms import EmailLoginForm
 from django.contrib.auth.decorators import login_required
 from .forms import PostForm
+from ckeditor_uploader.views import upload
 
 
 def home_view(request):
@@ -58,7 +59,6 @@ def confirm_email_view(request):
         form = EmailCodeForm()
 
     return render(request, 'board/confirm_email.html', {'form': form})
-
 
 
 def registration_success_view(request):

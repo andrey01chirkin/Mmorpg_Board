@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,13 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-2un(ca@2qvt3$gw&fy&3ddc8l44l6nlqxq2hqvbo=m5z2c6emn'
+load_dotenv()
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -74,7 +75,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mmorpg_board.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
@@ -116,7 +116,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
@@ -135,6 +134,8 @@ CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_IMAGE_BACKEND = "pillow"
 CKEDITOR_ALLOW_NONIMAGE_FILES = False
 
+CKEDITOR_RESTRICT_BY_USER = True
+
 CKEDITOR_CONFIGS = {
     'default': {
         'toolbar': 'Custom',
@@ -146,14 +147,21 @@ CKEDITOR_CONFIGS = {
             ['Link', 'Unlink', 'Anchor'],
             ['Image', 'Table', 'HorizontalRule', 'SpecialChar'],
             ['Maximize'],
+            # ['Source'],
         ],
+        'extraPlugins': ','.join(['uploadimage', 'image2']),
+        'image2_alignClasses': ['align-left', 'align-center', 'align-right'],
+        'filebrowserUploadUrl': '/ckeditor/upload/',
+        'filebrowserBrowseUrl': '/ckeditor/browse/',
+        'allowedContent': True,
     }
 }
+
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # DEFAULT_FROM_EMAIL = 'chirkin.andrey377@gmail.com'
 
-load_dotenv()
+
 
 email = os.getenv('email')
 email_password = os.getenv('email_password')

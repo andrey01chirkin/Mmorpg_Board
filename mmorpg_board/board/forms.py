@@ -115,7 +115,6 @@ class EmailLoginForm(forms.Form):
         return cleaned_data
 
 
-
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
@@ -132,5 +131,4 @@ class PostForm(forms.ModelForm):
             'content': CKEditorUploadingWidget(attrs={'class': 'form-control'}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
         }
-
 

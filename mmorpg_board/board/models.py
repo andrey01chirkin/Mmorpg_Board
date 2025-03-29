@@ -45,3 +45,5 @@ class EmailConfirmation(models.Model):
     def generate_code(self):
         self.code = ''.join(random.choices('0123456789', k=6))
         self.save()
+
+
