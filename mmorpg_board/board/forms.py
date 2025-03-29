@@ -1,7 +1,10 @@
+from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
+from .models import Post
 import re
+
 
 class CustomRegistrationForm(forms.ModelForm):
     username = forms.CharField(
@@ -110,3 +113,24 @@ class EmailLoginForm(forms.Form):
             cleaned_data['user'] = user
 
         return cleaned_data
+
+
+
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ['title', 'category', 'content', 'image']
+        labels = {
+            'title': 'Заголовок',
+            'category': 'Категория',
+            'content': 'Содержание',
+            'image': 'Обложка объявления',
+        }
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={'class': 'form-select'}),
+            'content': CKEditorUploadingWidget(attrs={'class': 'form-control'}),
+            'image': forms.FileInput(attrs={'class': 'form-control'}),
+        }
+
+

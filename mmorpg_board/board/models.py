@@ -13,13 +13,17 @@ class Category(models.Model):
 
 class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    category = models.ForeignKey(Category, on_delete=models.PROTECT)
+    category = models.ForeignKey('Category', on_delete=models.PROTECT)
     title = models.CharField(max_length=200)
-    content = RichTextUploadingField()
+    content = RichTextUploadingField()  # Используем CKEditor с загрузкой
+    image = models.ImageField(upload_to='post_images/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return f"/post/{self.id}/"
 
 
 class Response(models.Model):

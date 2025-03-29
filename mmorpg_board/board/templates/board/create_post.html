@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Разместить объявление{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <div class="card shadow-sm p-4 mt-5 mb-5 w-100" style="max-width: 600px;">
+        <h2 class="text-center mb-3">Разместить объявление</h2>
+        <hr class="mx-auto mb-4" style="width: 60px; border-top: 3px solid #0d6efd;">
+
+        {% if form.errors %}
+        <div class="alert alert-danger">
+            {{ form.errors }}
+        </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Опубликовать</button>
+        </form>
+    </div>
+</div>
+<script src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+<script src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+{% endblock %}
