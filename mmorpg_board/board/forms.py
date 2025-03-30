@@ -118,18 +118,16 @@ class EmailLoginForm(forms.Form):
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'category', 'content', 'image']
+        fields = ['title', 'category', 'content']
         labels = {
             'title': 'Заголовок',
             'category': 'Категория',
             'content': 'Содержание',
-            'image': 'Обложка объявления',
         }
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'category': forms.Select(attrs={'class': 'form-select'}),
             'content': CKEditorUploadingWidget(attrs={'class': 'form-control'}),
-            'image': forms.FileInput(attrs={'class': 'form-control'}),
         }
 
 

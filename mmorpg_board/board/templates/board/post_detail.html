@@ -21,12 +21,14 @@
         {% endfor %}
     {% endif %}
 
-    <hr>
-    <h3>Отправить отклик:</h3>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.content }}
-        <button type="submit" class="btn btn-primary">Отправить</button>
-    </form>
+    {% if user.is_authenticated %}
+        <hr>
+        <h3>Отправить отклик:</h3>
+        <form method="post" class="reply-form">
+            {% csrf_token %}
+            {{ form.content }}
+            <button type="submit" class="btn btn-primary mt-3">Отправить</button>
+        </form>
+    {% endif %}
 </div>
 {% endblock %}

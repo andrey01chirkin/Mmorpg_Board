@@ -1,11 +1,15 @@
+import os
+
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
+from dotenv import load_dotenv
+
 from .forms import CustomRegistrationForm, ReplyForm
 from .models import EmailConfirmation, Post, Reply
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from .forms import EmailCodeForm
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from .forms import EmailLoginForm
 from django.contrib.auth.decorators import login_required
 from .forms import PostForm
@@ -23,11 +27,13 @@ def register_view(request):
             confirmation = EmailConfirmation.objects.create(user=user)
             confirmation.generate_code()
 
+            load_dotenv()
+
             # Отправка письма
             send_mail(
                 subject='Ваш код подтверждения',
                 message=f'Код подтверждения: {confirmation.code}',
-                from_email='chirkin.andrey377@gmail.com',
+                from_email=os.getenv('email'),
                 recipient_list=[user.email],
             )
             request.session['user_id'] = user.id
@@ -75,6 +81,11 @@ def login_view(request):
             return redirect('/')
     return render(request, 'board/login.html', {'form': form})
 
+@login_required
+def custom_logout_view(request):
+    logout(request)
+    return redirect('home')
+
 
 @login_required
 def create_post(request):
@@ -90,7 +101,6 @@ def create_post(request):
     return render(request, 'board/create_post.html', {'form': form})
 
 
-@login_required
 def post_detail_view(request, post_id):
     try:
         post = get_object_or_404(Post, id=post_id)
@@ -130,6 +140,13 @@ def post_detail_view(request, post_id):
 def my_posts_view(request):
     posts = Post.objects.filter(author=request.user)
     return render(request, 'board/my_posts.html', {'posts': posts})
+
+
+@login_required
+def delete_post_view(request, post_id):
+    post = get_object_or_404(Post, id=post_id, author=request.user)
+    post.delete()
+    return redirect('my_posts')
 
 
 def edit_post_view(request, post_id):

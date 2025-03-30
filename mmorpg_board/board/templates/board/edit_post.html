@@ -18,12 +18,6 @@
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}
-            {% if post.image %}
-                <div>
-                    <label>Текущая обложка:</label><br>
-                    <img src="{{ post.image.url }}" class="mb-3" alt="Обложка" style="max-width: 300px;">
-                </div>
-            {% endif %}
             <button type="submit" class="btn btn-success">Сохранить изменения</button>
         </form>
 

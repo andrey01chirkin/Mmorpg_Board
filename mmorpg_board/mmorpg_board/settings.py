@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'ckeditor',               # CKEditor
     'ckeditor_uploader',      # CKEditor uploader
-    'board',                  # Твое приложение
+    'board',
 ]
 
 MIDDLEWARE = [
@@ -115,6 +115,8 @@ TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
 
 USE_TZ = True
+
+LOGOUT_REDIRECT_URL = 'home'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/

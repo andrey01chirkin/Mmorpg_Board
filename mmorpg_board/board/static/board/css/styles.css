@@ -1,0 +1,38 @@
+.dropdown-menu a {
+    color: #000;
+}
+.dropdown-menu a:hover {
+    background-color: #f0f0f0;
+}
+.dropdown-menu a.text-danger:hover {
+    background-color: #f8d7da;
+}
+
+.card {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+}
+
+.shadow-modern {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1),
+                0 1px 3px rgba(0, 0, 0, 0.08); /* Мягкие современные тени */
+}
+
+.card:hover .shadow-modern {
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15),
+                0 3px 6px rgba(0, 0, 0, 0.10); /* Легкое усиление тени при наведении */
+}
+
+.card-title {
+    color: #0056b3;
+}
+
+.btn-primary {
+    background-color: #0069d9;
+    border-color: #0062cc;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}

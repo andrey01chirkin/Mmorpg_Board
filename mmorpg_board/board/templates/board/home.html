@@ -4,23 +4,22 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="text-center">Последние объявления</h2>
-    <hr>
-
+    <h2 class="text-center mb-4">Последние объявления</h2>
     {% if posts %}
-        <div class="row">
+        <div class="row row-cols-1 row-cols-md-2 g-4">
             {% for post in posts %}
-                <div class="col-md-6 mb-4">
-                    <div class="card shadow-sm">
-                        {% if post.image %}
-                        <img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.title }}">
-                        {% endif %}
-                        <div class="card-body">
-                            <h5 class="card-title">{{ post.title }}</h5>
+                <div class="col">
+                    <div class="card h-100 shadow-modern border-0 rounded-3 d-flex flex-column">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title text-dark fw-bold">{{ post.title }}</h5>
                             <p class="card-text">{{ post.content|safe|truncatewords:20 }}</p>
-                            <p class="card-text"><small class="text-muted">Автор: {{ post.author.username }}</small></p>
-                            <p class="card-text"><small class="text-muted">Дата: {{ post.created_at|date:"d.m.Y H:i" }}</small></p>
-                            <a href="{{ post.get_absolute_url }}" class="btn btn-primary">Читать далее</a>
+                            <div class="d-flex justify-content-between align-items-center mt-auto">
+                                <div class="text-muted">
+                                    <small>Автор: {{ post.author.username }}</small><br>
+                                    <small>Дата: {{ post.created_at|date:"d.m.Y H:i" }}</small>
+                                </div>
+                                <a href="{{ post.get_absolute_url }}" class="btn btn-primary btn-sm">Читать далее</a>
+                            </div>
                         </div>
                     </div>
                 </div>
