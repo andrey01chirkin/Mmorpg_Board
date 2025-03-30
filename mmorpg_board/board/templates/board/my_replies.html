@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Отклики на мои объявления</h2>
+
+<form method="get">
+<!--    <label>Фильтровать по откликам:</label>-->
+    <select name="post_id" onchange="this.form.submit()">
+        <option value="">Все</option>
+        {% for post in user_posts %}
+        <option value="{{ post.id }}" {% if request.GET.post_id == post.id|stringformat:"s" %}selected{% endif %}>{{ post.title }}</option>
+        {% endfor %}
+    </select>
+</form>
+
+<table class="table mt-3">
+    <tr>
+        <th>Объявление</th>
+        <th>Автор отклика</th>
+        <th>Текст</th>
+        <th>Принят</th>
+        <th>Действия</th>
+    </tr>
+    {% for reply in replies %}
+    <tr>
+        <td>{{ reply.post.title }}</td>
+        <td>{{ reply.author.username }}</td>
+        <td>{{ reply.content }}</td>
+        <td>{{ reply.accepted|yesno:"Да,Нет" }}</td>
+        <td>
+            {% if not reply.accepted %}
+            <a href="{% url 'accept_reply' reply.id %}" class="btn btn-success">Принять</a>
+            {% endif %}
+            <a href="{% url 'delete_reply' reply.id %}" class="btn btn-danger">Удалить</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

@@ -47,3 +47,12 @@ class EmailConfirmation(models.Model):
         self.save()
 
 
+class Reply(models.Model):
+    post = models.ForeignKey('Post', on_delete=models.CASCADE, related_name='replies')
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField(verbose_name="Текст отклика")
+    created_at = models.DateTimeField(auto_now_add=True)
+    accepted = models.BooleanField(default=False, verbose_name="Принят")
+
+    def __str__(self):
+        return f"Отклик от {self.author} на {self.post}"

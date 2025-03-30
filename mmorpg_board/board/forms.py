@@ -2,7 +2,7 @@ from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from .models import Post
+from .models import Post, Reply
 import re
 
 
@@ -132,3 +132,12 @@ class PostForm(forms.ModelForm):
             'image': forms.FileInput(attrs={'class': 'form-control'}),
         }
 
+
+class ReplyForm(forms.ModelForm):
+    class Meta:
+        model = Reply
+        fields = ['content']
+        labels = {'content': 'Текст отклика'}
+        widgets = {
+            'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Введите ваш отклик...'}),
+        }

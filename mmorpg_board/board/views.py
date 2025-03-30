@@ -1,6 +1,7 @@
+from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import CustomRegistrationForm
-from .models import EmailConfirmation, Post
+from .forms import CustomRegistrationForm, ReplyForm
+from .models import EmailConfirmation, Post, Reply
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from .forms import EmailCodeForm
@@ -8,7 +9,6 @@ from django.contrib.auth import login
 from .forms import EmailLoginForm
 from django.contrib.auth.decorators import login_required
 from .forms import PostForm
-from ckeditor_uploader.views import upload
 
 
 def home_view(request):
@@ -90,9 +90,41 @@ def create_post(request):
     return render(request, 'board/create_post.html', {'form': form})
 
 
-def post_detail_view(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    return render(request, 'board/post_detail.html', {'post': post})
+@login_required
+def post_detail_view(request, post_id):
+    try:
+        post = get_object_or_404(Post, id=post_id)
+        accepted_replies = post.replies.filter(accepted=True)  # Отображаем только принятые отклики
+
+        if request.method == 'POST':
+            form = ReplyForm(request.POST)
+            if form.is_valid():
+                reply = form.save(commit=False)
+                reply.author = request.user
+                reply.post = post
+                reply.save()
+
+            # Отправка уведомления автору объявления
+            send_mail(
+                subject='Новый отклик на ваше объявление',
+                message=f'На ваше объявление "{post.title}" поступил отклик от {request.user.username}: {reply.content}',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[post.author.email],
+                fail_silently=False,
+            )
+            return redirect('post_detail', post_id=post.id)
+        else:
+            form = ReplyForm()
+
+        return render(request, 'board/post_detail.html', {
+            'post': post,
+            'form': form,
+            'replies': accepted_replies,
+        })
+
+    except Exception as e:
+        print(f"Ошибка: {e}")
+        return render(request, 'board/error.html', {'message': str(e)})
 
 
 def my_posts_view(request):
@@ -110,3 +142,39 @@ def edit_post_view(request, post_id):
     else:
         form = PostForm(instance=post)
     return render(request, 'board/edit_post.html', {'form': form, 'post': post})
+
+
+@login_required
+def my_replies_view(request):
+    user_posts = Post.objects.filter(author=request.user)
+    replies = Reply.objects.filter(post__in=user_posts).select_related('post')
+    post_filter = request.GET.get('post_id')
+
+    if post_filter:
+        replies = replies.filter(post__id=post_filter)
+
+    return render(request, 'board/my_replies.html', {'replies': replies, 'user_posts': user_posts})
+
+
+@login_required
+def accept_reply_view(request, reply_id):
+    reply = get_object_or_404(Reply, id=reply_id, post__author=request.user)
+    reply.accepted = True
+    reply.save()
+
+    # Отправка уведомления пользователю
+    send_mail(
+        'Ваш отклик принят',
+        f'Ваш отклик на объявление "{reply.post.title}" был принят!',
+        settings.DEFAULT_FROM_EMAIL,
+        [reply.author.email],
+        fail_silently=False,
+    )
+
+    return redirect('my_replies')
+
+@login_required
+def delete_reply_view(request, reply_id):
+    reply = get_object_or_404(Reply, id=reply_id, post__author=request.user)
+    reply.delete()
+    return redirect('my_replies')

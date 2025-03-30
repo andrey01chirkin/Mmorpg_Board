@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import register_view, confirm_email_view, login_view, home_view, registration_success_view, create_post, \
-    post_detail_view, my_posts_view, edit_post_view
+    post_detail_view, my_posts_view, edit_post_view, my_replies_view, accept_reply_view, \
+    delete_reply_view
 from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
@@ -11,9 +12,13 @@ urlpatterns = [
     path('login/', login_view, name='login'),
     path('logout/', LogoutView.as_view(next_page='home'), name='logout'),
     path('create/', create_post, name='create_post'),
-    path('post/<int:pk>/', post_detail_view, name='post_detail'),
+    path('post/<int:post_id>/', post_detail_view, name='post_detail'),
 
     path('my_posts/', my_posts_view, name='my_posts'),
     path('edit/<int:post_id>/', edit_post_view, name='edit_post'),
+
+    path('my_replies/', my_replies_view, name='my_replies'),
+    path('accept_reply/<int:reply_id>/', accept_reply_view, name='accept_reply'),
+    path('delete_reply/<int:reply_id>/', delete_reply_view, name='delete_reply'),
 ]
 

@@ -157,11 +157,8 @@ CKEDITOR_CONFIGS = {
     }
 }
 
-
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # DEFAULT_FROM_EMAIL = 'chirkin.andrey377@gmail.com'
-
-
 
 email = os.getenv('email')
 email_password = os.getenv('email_password')
