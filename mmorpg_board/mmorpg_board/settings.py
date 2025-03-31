@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+
 from dotenv import load_dotenv
 
 
@@ -158,9 +159,6 @@ CKEDITOR_CONFIGS = {
         'allowedContent': True,
     }
 }
-
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# DEFAULT_FROM_EMAIL = 'chirkin.andrey377@gmail.com'
 
 email = os.getenv('email')
 email_password = os.getenv('email_password')

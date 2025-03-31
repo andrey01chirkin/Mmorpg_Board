@@ -21,7 +21,7 @@
         {% endfor %}
     {% endif %}
 
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated and user != post.author %}
         <hr>
         <h3>Отправить отклик:</h3>
         <form method="post" class="reply-form">
@@ -29,6 +29,23 @@
             {{ form.content }}
             <button type="submit" class="btn btn-primary mt-3">Отправить</button>
         </form>
+    {% endif %}
+
+    {% if messages %}
+        <div class="success-message" id="successMessage">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        </div>
+        <script>
+            const successMessage = document.getElementById('successMessage');
+            if (successMessage) {
+                successMessage.style.display = 'block';
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 2000);  // Сообщение исчезнет через 2 секунды
+            }
+        </script>
     {% endif %}
 </div>
 {% endblock %}

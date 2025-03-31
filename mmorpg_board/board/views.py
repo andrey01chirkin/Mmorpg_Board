@@ -1,6 +1,7 @@
 import os
 
 from django.conf import settings
+from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from dotenv import load_dotenv
 
@@ -104,9 +105,14 @@ def create_post(request):
 def post_detail_view(request, post_id):
     try:
         post = get_object_or_404(Post, id=post_id)
-        accepted_replies = post.replies.filter(accepted=True)  # Отображаем только принятые отклики
+        accepted_replies = post.replies.filter(accepted=True)
 
         if request.method == 'POST':
+
+            if request.user == post.author:
+                messages.error(request, "Вы не можете оставить отклик на свое собственное объявление.")
+                return redirect('post_detail', post_id=post_id)
+
             form = ReplyForm(request.POST)
             if form.is_valid():
                 reply = form.save(commit=False)
@@ -114,15 +120,18 @@ def post_detail_view(request, post_id):
                 reply.post = post
                 reply.save()
 
-            # Отправка уведомления автору объявления
-            send_mail(
-                subject='Новый отклик на ваше объявление',
-                message=f'На ваше объявление "{post.title}" поступил отклик от {request.user.username}: {reply.content}',
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[post.author.email],
-                fail_silently=False,
-            )
-            return redirect('post_detail', post_id=post.id)
+                # Отправка уведомления автору объявления
+                send_mail(
+                    subject='Новый отклик на ваше объявление',
+                    message=f'На ваше объявление "{post.title}" поступил отклик от {request.user.username}: {reply.content}',
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[post.author.email],
+                    fail_silently=False,
+                )
+
+                messages.success(request, "Ваш отклик успешно отправлен!")
+                return redirect('post_detail', post_id=post_id)
+
         else:
             form = ReplyForm()
 
@@ -135,6 +144,7 @@ def post_detail_view(request, post_id):
     except Exception as e:
         print(f"Ошибка: {e}")
         return render(request, 'board/error.html', {'message': str(e)})
+
 
 
 def my_posts_view(request):
