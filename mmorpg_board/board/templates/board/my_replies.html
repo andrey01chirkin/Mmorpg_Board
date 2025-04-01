@@ -3,16 +3,25 @@
 {% block content %}
 <h2>Отклики на мои объявления</h2>
 
-<form method="get">
-    <select name="post_id" onchange="this.form.submit()">
-        <option value="">Все</option>
-        {% for post in user_posts %}
-        <option value="{{ post.id }}" {% if request.GET.post_id == post.id|stringformat:"s" %}selected{% endif %}>{{ post.title }}</option>
+<!-- Фильтр по категориям и статусу -->
+<form method="get" class="d-flex gap-3 mb-3 align-items-center">
+    <select name="category" id="category" onchange="this.form.submit()" class="form-select w-auto">
+        <option value="">Все категории</option>
+        {% for cat in categories %}
+            <option value="{{ cat.name }}" {% if request.GET.category == cat.name %}selected{% endif %}>
+                {{ cat.name }}
+            </option>
         {% endfor %}
+    </select>
+
+    <select name="status" id="status" onchange="this.form.submit()" class="form-select w-auto">
+        <option value="">Все статусы</option>
+        <option value="accepted" {% if request.GET.status == "accepted" %}selected{% endif %}>Принятые</option>
+        <option value="not_accepted" {% if request.GET.status == "not_accepted" %}selected{% endif %}>Не принятые</option>
     </select>
 </form>
 
-<table class="table mt-3">
+<table class="table table-hover mt-3">
     <tr>
         <th>Объявление</th>
         <th>Категория</th>
@@ -30,10 +39,10 @@
         <td>{{ reply.accepted|yesno:"Да,Нет" }}</td>
         <td>
             {% if not reply.accepted %}
-            <a href="{% url 'accept_reply' reply.id %}" class="btn btn-success">Принять</a>
+            <a href="{% url 'accept_reply' reply.id %}" class="btn btn-success btn-sm">Принять</a>
             {% endif %}
             <!-- Кнопка для вызова модального окна -->
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-reply-id="{{ reply.id }}">
+            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" data-reply-id="{{ reply.id }}">
                 Удалить
             </button>
         </td>

@@ -2,11 +2,12 @@ import os
 
 from django.conf import settings
 from django.contrib import messages
+from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from dotenv import load_dotenv
 
 from .forms import CustomRegistrationForm, ReplyForm
-from .models import EmailConfirmation, Post, Reply
+from .models import EmailConfirmation, Post, Reply, Category
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from .forms import EmailCodeForm
@@ -174,13 +175,34 @@ def edit_post_view(request, post_id):
 @login_required
 def my_replies_view(request):
     user_posts = Post.objects.filter(author=request.user)
-    replies = Reply.objects.filter(post__in=user_posts).select_related('post')
-    post_filter = request.GET.get('post_id')
+    replies = Reply.objects.filter(post__author=request.user)
 
-    if post_filter:
-        replies = replies.filter(post__id=post_filter)
+    # Получаем параметры фильтрации
+    category = request.GET.get('category')
+    status = request.GET.get('status')  # Новый параметр статуса
 
-    return render(request, 'board/my_replies.html', {'replies': replies, 'user_posts': user_posts})
+    # Фильтрация по категории
+    if category:
+        replies = replies.filter(post__category__name=category)
+
+    # Фильтрация по статусу принятия
+    if status == 'accepted':
+        replies = replies.filter(accepted=True)
+    elif status == 'not_accepted':
+        replies = replies.filter(accepted=False)
+
+    # Получаем категории только тех объявлений, которые имеют отклики
+    categories = Category.objects.filter(
+        Q(post__in=user_posts) & Q(post__replies__isnull=False)
+    ).distinct()
+
+    return render(request, 'board/my_replies.html', {
+        'replies': replies,
+        'categories': categories,
+        'user_posts': user_posts,
+    })
+
+
 
 
 @login_required
