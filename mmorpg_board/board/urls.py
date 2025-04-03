@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import register_view, confirm_email_view, login_view, home_view, registration_success_view, create_post, \
     post_detail_view, my_posts_view, edit_post_view, my_replies_view, accept_reply_view, \
-    delete_reply_view, delete_post_view, custom_logout_view
+    delete_reply_view, delete_post_view, custom_logout_view, subscriptions, unsubscribe
 
 urlpatterns = [
     path('', home_view, name='home'),
@@ -20,5 +20,8 @@ urlpatterns = [
     path('my_replies/', my_replies_view, name='my_replies'),
     path('accept_reply/<int:reply_id>/', accept_reply_view, name='accept_reply'),
     path('delete_reply/<int:reply_id>/', delete_reply_view, name='delete_reply'),
+
+    path('subscriptions/', subscriptions, name='subscriptions'),
+    path('unsubscribe/<int:sub_id>/', unsubscribe, name='unsubscribe'),
 ]
 

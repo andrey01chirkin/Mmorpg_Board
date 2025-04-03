@@ -2,7 +2,7 @@ from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from .models import Post, Reply
+from .models import Post, Reply, Category, Subscription
 import re
 
 
@@ -139,3 +139,11 @@ class ReplyForm(forms.ModelForm):
         widgets = {
             'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Введите ваш отклик...'}),
         }
+
+
+class SubscriptionForm(forms.ModelForm):
+    category = forms.ModelChoiceField(queryset=Category.objects.all(), widget=forms.Select(attrs={'class': 'form-select'}))
+
+    class Meta:
+        model = Subscription
+        fields = ['category']

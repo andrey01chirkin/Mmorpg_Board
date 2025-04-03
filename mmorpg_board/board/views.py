@@ -6,8 +6,8 @@ from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from dotenv import load_dotenv
 
-from .forms import CustomRegistrationForm, ReplyForm
-from .models import EmailConfirmation, Post, Reply, Category
+from .forms import CustomRegistrationForm, ReplyForm, SubscriptionForm
+from .models import EmailConfirmation, Post, Reply, Category, Subscription
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from .forms import EmailCodeForm
@@ -227,3 +227,32 @@ def delete_reply_view(request, reply_id):
     reply = get_object_or_404(Reply, id=reply_id, post__author=request.user)
     reply.delete()
     return redirect('my_replies')
+
+
+@login_required
+def subscriptions(request):
+    user_subscriptions = Subscription.objects.filter(user=request.user)
+    categories = Category.objects.exclude(id__in=user_subscriptions.values_list('category_id', flat=True))
+
+    if request.method == "POST":
+        form = SubscriptionForm(request.POST)
+        if form.is_valid():
+            subscription = form.save(commit=False)
+            subscription.user = request.user
+            subscription.save()
+            return redirect('subscriptions')
+    else:
+        form = SubscriptionForm()
+
+    return render(request, 'board/subscriptions.html', {
+        'form': form,
+        'subscriptions': user_subscriptions,
+        'categories': categories
+    })
+
+@login_required
+def unsubscribe(request, sub_id):
+    subscription = Subscription.objects.get(id=sub_id, user=request.user)
+    if subscription:
+        subscription.delete()
+    return redirect('subscriptions')
