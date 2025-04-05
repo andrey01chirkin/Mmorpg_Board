@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Подписки на категории</h2>
+
+<!-- Форма подписки -->
+<form method="post" class="mb-3 d-flex gap-2 align-items-center" style="max-width: 400px;">
+    {% csrf_token %}
+    <select name="category" class="form-select">
+        <option value="">Выберите категорию</option>
+        {% for category in categories %}
+            <option value="{{ category.id }}">{{ category.name }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary">Подписаться</button>
+</form>
+
+<!-- Список подписок -->
+<div class="container">
+    <h4 class="mb-3">Ваши подписки</h4>
+    {% if subscriptions %}
+        <div class="d-flex flex-wrap gap-3">
+            {% for subscription in subscriptions %}
+            <div class="card shadow-sm p-2 text-center subscription-card"
+                 style="min-width: 150px; flex: 1 1 calc(20% - 10px); max-width: 200px;">
+                <div class="fw-bold">{{ subscription.category.name }}</div>
+                <form method="post" action="{% url 'unsubscribe' subscription.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm w-100 mt-2">
+                        Отписаться
+                    </button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-muted mt-3">У Вас нет подписок на категории</p>
+    {% endif %}
+</div>
+
+
+
+{% endblock %}

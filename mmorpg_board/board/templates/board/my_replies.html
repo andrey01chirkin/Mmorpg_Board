@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Отклики на мои объявления</h2>
+
+<!-- Фильтр по категориям и статусу -->
+<form method="get" class="d-flex gap-3 mb-3 align-items-center">
+    <select name="category" id="category" onchange="this.form.submit()" class="form-select w-auto">
+        <option value="">Все категории</option>
+        {% for cat in categories %}
+            <option value="{{ cat.name }}" {% if request.GET.category == cat.name %}selected{% endif %}>
+                {{ cat.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <select name="status" id="status" onchange="this.form.submit()" class="form-select w-auto">
+        <option value="">Все статусы</option>
+        <option value="accepted" {% if request.GET.status == "accepted" %}selected{% endif %}>Принятые</option>
+        <option value="not_accepted" {% if request.GET.status == "not_accepted" %}selected{% endif %}>Не принятые</option>
+    </select>
+</form>
+
+<table class="table table-hover mt-3">
+    <tr>
+        <th>Объявление</th>
+        <th>Категория</th>
+        <th>Автор отклика</th>
+        <th>Текст</th>
+        <th>Принят</th>
+        <th>Действия</th>
+    </tr>
+    {% for reply in replies %}
+    <tr>
+        <td>{{ reply.post.title }}</td>
+        <td>{{ reply.post.category }}</td>
+        <td>{{ reply.author.username }}</td>
+        <td>{{ reply.content }}</td>
+        <td>{{ reply.accepted|yesno:"Да,Нет" }}</td>
+        <td>
+            {% if not reply.accepted %}
+            <a href="{% url 'accept_reply' reply.id %}" class="btn btn-success btn-sm">Принять</a>
+            {% endif %}
+            <!-- Кнопка для вызова модального окна -->
+            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" data-reply-id="{{ reply.id }}">
+                Удалить
+            </button>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<!-- Модальное окно подтверждения удаления -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Подтверждение удаления</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                Вы уверены, что хотите удалить этот отклик?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <form id="deleteForm" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Удалить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Событие на открытие модального окна
+    var deleteModal = document.getElementById('deleteModal');
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var replyId = button.getAttribute('data-reply-id');
+        var form = document.getElementById('deleteForm');
+        form.action = "{% url 'delete_reply' 0 %}".replace('0', replyId);
+    });
+</script>
+{% endblock %}

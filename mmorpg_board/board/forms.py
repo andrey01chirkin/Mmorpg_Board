@@ -1,7 +1,10 @@
+from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
+from .models import Post, Reply, Category, Subscription
 import re
+
 
 class CustomRegistrationForm(forms.ModelForm):
     username = forms.CharField(
@@ -110,3 +113,37 @@ class EmailLoginForm(forms.Form):
             cleaned_data['user'] = user
 
         return cleaned_data
+
+
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ['title', 'category', 'content']
+        labels = {
+            'title': 'Заголовок',
+            'category': 'Категория',
+            'content': 'Содержание',
+        }
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={'class': 'form-select'}),
+            'content': CKEditorUploadingWidget(attrs={'class': 'form-control'}),
+        }
+
+
+class ReplyForm(forms.ModelForm):
+    class Meta:
+        model = Reply
+        fields = ['content']
+        labels = {'content': 'Текст отклика'}
+        widgets = {
+            'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Введите ваш отклик...'}),
+        }
+
+
+class SubscriptionForm(forms.ModelForm):
+    category = forms.ModelChoiceField(queryset=Category.objects.all(), widget=forms.Select(attrs={'class': 'form-select'}))
+
+    class Meta:
+        model = Subscription
+        fields = ['category']
