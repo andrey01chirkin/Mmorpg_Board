@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'ckeditor',               # CKEditor
     'ckeditor_uploader',      # CKEditor uploader
     'board',
+    'django_apscheduler',
 ]
 
 MIDDLEWARE = [
@@ -171,5 +172,18 @@ EMAIL_HOST_PASSWORD = email_password
 EMAIL_USE_SSL = True
 DEFAULT_FROM_EMAIL = email
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
 
 
