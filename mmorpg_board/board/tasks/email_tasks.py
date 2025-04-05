@@ -7,11 +7,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def send_daily_updates():
-    """Отправка обновлений по категориям"""
-    logger.info("Запуск задачи рассылки новостей")
+def send_weekly_updates():
+    """Отправка еженедельных обновлений по категориям"""
+    logger.info("Запуск задачи еженедельной рассылки новостей")
     today = now().date()
-    yesterday = today - timedelta(days=1)
+    last_week = today - timedelta(days=7)
 
     try:
         subscriptions = Subscription.objects.select_related('user', 'category')
@@ -20,13 +20,13 @@ def send_daily_updates():
         user_posts = {}
 
         for sub in subscriptions:
-            start_of_day = now().replace(hour=0, minute=0, second=0, microsecond=0)
-            end_of_day = now().replace(hour=23, minute=59, second=59, microsecond=999999)
+            start_of_week = now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=7)
+            end_of_week = now().replace(hour=23, minute=59, second=59, microsecond=999999)
 
-            # Получаем новые посты за последние сутки в подписанных категориях
+            # Получаем новые посты за последнюю неделю в подписанных категориях
             new_posts = Post.objects.filter(
                 category=sub.category,
-                created_at__range=[start_of_day - timedelta(days=1), end_of_day]
+                created_at__range=[start_of_week, end_of_week]
             )
 
             if new_posts.exists():
@@ -45,14 +45,14 @@ def send_daily_updates():
         # Отправляем одно письмо для каждого пользователя с форматированным HTML содержимым
         for user, categories in user_posts.items():
             if categories:
-                message = f"Здравствуйте, {user.username}!<br><br>Вот новые объявления в ваших категориях:<br><br>"
+                message = f"Здравствуйте, {user.username}!<br><br>Вот новые объявления в ваших категориях за последнюю неделю:<br><br>"
 
                 for category, posts in categories.items():
                     message += f"<strong>{category}:</strong><ul>{''.join(posts)}</ul>"
 
                 try:
                     send_mail(
-                        subject="Ежедневная рассылка новых объявлений",
+                        subject="Еженедельная рассылка новых объявлений",
                         message="",
                         html_message=message,
                         from_email=settings.DEFAULT_FROM_EMAIL,

@@ -4,7 +4,7 @@ from apscheduler.triggers.cron import CronTrigger
 from django_apscheduler.jobstores import DjangoJobStore
 from django_apscheduler.models import DjangoJobExecution
 from django_apscheduler import util
-from board.tasks.email_tasks import send_daily_updates
+from board.tasks.email_tasks import send_weekly_updates
 import logging
 
 logger = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ class Command(BaseCommand):
         try:
             # Задача рассылки новостей каждую неделю в понедельник в 9:00
             scheduler.add_job(
-                send_daily_updates,
+                send_weekly_updates,
                 trigger=CronTrigger(day_of_week="mon", hour=9, minute=0),  # Каждый понедельник в 9:00
                 id="weekly_newsletter",
                 max_instances=1,
